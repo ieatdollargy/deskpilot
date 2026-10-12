@@ -2,23 +2,108 @@
 
 ![Version](https://img.shields.io/badge/version-v0.5.0--alpha-orange)
 
-## Overview
-Deskpilot is an open-source desktop agent framework that enables AI to perceive and control your computer through computer vision and system-level interactions. Agents can:
+**A swarm of AI agents that reads the web, remembers it, and learns to act.**
 
-* Control your computer directly through voice or text commands
-* Process real-time screen content using computer vision and expert skill routing
-* Interact through natural language voice commands and text input
-* Provide continuous audio-visual feedback and action logging
-* Switch seamlessly between assistant and computer control modes
+- Website: [deskpilot.world](https://www.deskpilot.world)
+- X: [@UseDeskPilot](https://x.com/UseDeskPilot)
+- $DESK (governance token) — CA: `DUBZC2e7XrYnTFJqhEMWdw1KUoCQKqGwYHbAGVnQpump`
 
-Built for developers and researchers working on autonomous desktop agents, Deskpilot combines advanced computer vision, voice processing, and system control to create AI agents that can truly understand, analyze, and interact with computer interfaces.
+## What Deskpilot Is
 
-## Key Features
-- 🎯 Direct Computer Control - Voice and text command execution
-- 🔍 Computer Vision Analysis - Real-time screen processing
-- 🗣️ Voice Interaction - Natural language with ElevenLabs
-- 🤖 Customizable Agents - Configurable personalities and skills
-- 📊 Real-time Feedback - Audio-visual updates and logging
+Deskpilot is a swarm of autonomous AI agents. Each agent reads the internet according to its own character, records what it finds in a shared memory, and learns from it over time. The memory is designed to become training data for our own models. Later, the agents are meant to trade on their own, and eventually to manage funds for users.
+
+Four agents are running today:
+
+| Agent | Role | Focus |
+| --- | --- | --- |
+| Gennifer | The Analyst | Markets, macro, on-chain activity |
+| Twain | The Narrator | News, sentiment, narrative shifts |
+| Cody | The Dev | Protocols, architecture, security |
+| Art | The Creative | Design, generative art, brand direction |
+
+More agents will be added, each with a different character and focus.
+
+## Why a Swarm
+
+A single model with a single viewpoint tends to see the same things repeatedly. A group of agents with different priorities sees more. One agent follows markets and on-chain activity. Another follows research and technical discussion. Another follows news and public sentiment. Each reads different sources, asks different questions, and reaches different conclusions. The value comes from combining them.
+
+Every agent has a personality, a defined area of interest, and a set of sources it trusts. Assignments are set by character, and each agent decides what is worth reading and what is worth keeping.
+
+## How It Works
+
+1. **Reading.** The agents work in real browsers. They open pages, follow links, compare sources, and extract what is relevant to them.
+2. **Memory.** Each finding is stored with the claim, the source, the time, and the agent's own assessment. Over time this becomes a large, structured record of what the swarm has seen and concluded.
+3. **Training.** The accumulated memory will be used to train models that reflect how each character reads the world. The swarm produces the data that the next models are built from.
+4. **Visibility.** You can watch the process on [deskpilot.world](https://www.deskpilot.world). The Live Learning view shows pages entering each agent's memory as it reads them, including the page an agent has open and the link it will open next.
+5. **Voice.** Each agent will have its own X account, so you can follow the agents whose focus interests you. [@UseDeskPilot](https://x.com/UseDeskPilot) is the official project account and will announce the agent accounts. Agent handles: TBD.
+
+## What Is Live Today
+
+**Desktop agent** (this repo, `python main.py`): Computer Use mode (direct computer control through voice or text, Claude computer-use backend), Assistant mode (screenshot + expert skill routing, default Ticker Analysis skill), voice intent system (ElevenLabs), narrative processor, and the 4-agent avatar configuration above.
+
+**Web companion** (`site/`): 2x2 live agent wall, Live Learning feed (pages read, token estimate, current page, next link), a gated Human Chat panel (Turnstile + rate limits + 30-day retention), and offline unit tests (`node --test test/chat.test.js` from `site/`).
+
+## $DESK Token
+
+$DESK is the governance token of Deskpilot.
+
+```
+DUBZC2e7XrYnTFJqhEMWdw1KUoCQKqGwYHbAGVnQpump
+```
+
+What holders govern:
+
+- Which new agents and characters join the swarm
+- Which sources the agents prioritize
+- Trading limits and risk rules for the agents
+- Priorities for what we open-source first
+
+Fees fund the compute. Creator fees from $DESK go to a public treasury wallet and pay for model usage, servers, and infrastructure. The aim is a swarm that pays for its own compute.
+
+- Treasury wallet: TBD (will be published here when live; spending will be reported publicly)
+
+Agents trade (planned, not live): a portion of the treasury will be allocated to the agents to trade on their own, under strict position limits, loss caps, and a kill switch. Every decision will be logged with its reasoning, including the losses. This is an experiment in agent judgment. It can lose money.
+
+## Roadmap
+
+- **Phase 1: Learn (current).** Agents read, remember, and refine memory. The only thing at stake is data quality: a reliable memory with a source behind every entry.
+- **Phase 2: Release.** Publish the code (this repo), the memory format, and the first models and datasets for public use and review.
+- **Phase 3: Trade independently.** Once the swarm shows sound judgment, agents trade with their own funds under strict limits, fully logged including losses.
+- **Phase 4: Manage user funds.** Only on proven performance, strong risk controls, transparent reporting, and compliance with each region's laws and licensing. May not be available in every country.
+
+Coming next (in order):
+
+1. **Read with the agents.** Beyond which page an agent is reading — what it focuses on, what it skips and why, and where it goes next.
+2. **Public memory.** Everything learned, stored with source, time, and assessment, made inspectable by anyone.
+3. **Every agent gets a voice.** Each agent posts live as it learns from its own X account.
+
+## Status: What Is Still Missing
+
+Honest gap between the vision above and this repo today:
+
+| Vision | Today | Gap |
+| --- | --- | --- |
+| Public memory with source/time/assessment | Memory lives in a private store; only a live feed excerpt is visible | Public dump/API/docs not built |
+| Read-trace transparency (focus/skip/why) | Feed shows current page + next link only | Reasoning trace not emitted |
+| Per-agent X voices | Only [@UseDeskPilot](https://x.com/UseDeskPilot) exists | Agent handles TBD |
+| Governance ($DESK voting) | Token and scope announced; no mechanism in repo | Voting/DAO wiring missing |
+| Treasury + spending reports | Wallet TBD | Address + reporting missing |
+| Independent agent trading | Not implemented | Limits/kill-switch/audit log missing |
+| Models/datasets on Hugging Face | Not published | Filtering + docs pending |
+
+## Principles
+
+Autonomous agents that handle money call for more caution than typical software:
+
+- No promises of returns. Markets are uncertain and AI can be wrong. Nothing published is financial advice.
+- Position sizes, daily loss caps, and emergency stops are built into the design from the start.
+- Trades, reasoning, and results will be visible, including failures.
+- People who allocate funds can withdraw them; humans keep oversight.
+- Only allocate money you can afford to lose.
+
+## Open Source
+
+We plan to release the code on GitHub and the models and datasets on Hugging Face. The goal is for researchers and developers to inspect, reproduce, and build on the work. Datasets will be filtered and documented, and source licenses and site terms will be respected. Openness is how this project earns trust.
 
 ## System Requirements
 - **Recommended Platform**: macOS with Apple Silicon (M1, M2, M3, M4) for optimal computer-use capabilities
@@ -231,3 +316,6 @@ Based on TankWork by AgentTank (MIT).
 
 ## License
 This project is licensed under the [MIT License](LICENSE.txt) - see the LICENSE file for details.
+
+## Disclaimer
+This content is for information only and is not financial, investment, or legal advice. Autonomous trading carries a substantial risk of loss. Features described as planned may change.
