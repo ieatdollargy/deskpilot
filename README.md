@@ -34,7 +34,7 @@ Built for developers and researchers working on autonomous desktop agents, Deskp
 
 ### 2. Clone Repository
 ```bash
-git clone https://github.com/ieatdollargy/deskpilot.git
+git clone https://github.com/DeskPilotWorld/deskpilot.git
 cd deskpilot
 ```
 

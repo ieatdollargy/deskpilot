@@ -15,7 +15,7 @@ Thanks for your interest in contributing! We're in early development and welcome
 
 1. Fork and clone:
 ```bash
-git clone https://github.com/ieatdollargy/deskpilot.git
+git clone https://github.com/DeskPilotWorld/deskpilot.git
 cd deskpilot
 ```
 
