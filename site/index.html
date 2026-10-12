@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deskpilot</title>
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#0c0c0c">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Deskpilot">
+  <meta name="twitter:image" content="twitter-avatar.png">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c0c0c;
+      --card: #111111;
+      --bar: #1a1a1a;
+      --line: #2a2a2a;
+      --text: #f2f2f2;
+      --muted: #9a9a9a;
+      --red: #e23b2f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
+    body {
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      height: 100%;
+    }
+    .wall {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 10px;
+      padding: 10px;
+      min-height: 0;
+      overflow: auto;
+    }
+    .wall::-webkit-scrollbar { width: 10px; }
+    .wall::-webkit-scrollbar-thumb { background: #cfcfcf; border-radius: 8px; }
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
+      background: #000;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .stage {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      background: #000;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+    .activity {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 28px 14px 10px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.88));
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .activity b {
+      display: block;
+      color: #fff;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .activity .learn { display: block; margin-top: 3px; color: #ddd; }
+    .activity a { color: #f0c6c2; }
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px 12px;
+      background: var(--bar);
+      border-top: 1px solid #242424;
+    }
+    .bar h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 650;
+    }
+    .bar p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .open {
+      width: 26px;
+      height: 26px;
+      flex: 0 0 auto;
+      border: 1.5px solid var(--red);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--red);
+      cursor: pointer;
+    }
+    .open svg { display: block; margin: 0 auto; }
+    .side {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border-left: 1px solid #2c2c2c;
+      background: #111;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #242424;
+      background: #0e0e0e;
+    }
+    .brand img {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #2a2a2a;
+      border-radius: 7px;
+      display: block;
+    }
+    .brand span {
+      font-size: 15px;
+      font-weight: 650;
+    }
+    .brand .x-link {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #9a9a9a;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 4px 9px;
+      background: #161616;
+    }
+    .brand .x-link:hover { color: #fff; border-color: #3a3a3a; }
+    .ca {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin: 0;
+      padding: 10px 12px;
+      border: 0;
+      border-bottom: 1px solid #242424;
+      background: #0e0e0e;
+      color: #f2f2f2;
+      font: inherit;
+      font-family: Consolas, "Cascadia Mono", ui-monospace, monospace;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .ca .ca-label { color: #9a9a9a; }
+    .ca.copied .ca-value { color: #3dd68c; }
+    .side-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 12px 12px 10px;
+      border-bottom: 1px solid #242424;
+    }
+    .side-head h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 650;
+    }
+    .phantom {
+      border: 1px solid #3a3a3a;
+      background: #161616;
+      color: #eee;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .log {
+      flex: 1;
+      overflow: auto;
+      padding: 8px 0 16px;
+    }
+    .screen {
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid #242424;
+      font-family: Consolas, "Cascadia Mono", ui-monospace, monospace;
+    }
+    .screen .who { margin: 0; font-size: 12px; color: #d7d7d7; }
+    .screen .status { margin: 4px 0 8px; color: #9a9a9a; font-size: 12px; line-height: 1.35; }
+    .screen a { display: block; font-size: 12px; line-height: 1.35; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .screen a.cyan { color: #5ce1e6; }
+    .screen a.pink { color: #ff5ea8; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #242424;
+    }
+    .stats div { min-width: 0; }
+    .stats b { display: block; font-size: 14px; }
+    .stats span { color: var(--muted); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .section-h {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 12px 0;
+      font-size: 12px;
+    }
+    .section-h .dim { color: #6f6f6f; }
+    .log .line {
+      display: grid;
+      grid-template-columns: auto auto auto 1fr auto;
+      gap: 6px;
+      align-items: baseline;
+      padding: 6px 12px;
+      border-bottom: 1px solid #1d1d1d;
+      font-family: Consolas, "Cascadia Mono", ui-monospace, monospace;
+      font-size: 11px;
+    }
+    .log .t, .log .n { color: #8d8d8d; }
+    .log .who { color: #f2f2f2; }
+    .log .ok { color: #3dd68c; }
+    .log a { color: #d0d0d0; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .log .dim { color: #6f6f6f; display: block; padding: 10px 12px; }
+    .bar-btns { display: flex; gap: 6px; align-items: center; flex: 0 0 auto; }
+    .note {
+      margin: 0;
+      padding: 10px 14px 14px;
+      color: #6f6f6f;
+      font-size: 12px;
+    }
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { grid-template-columns: 1fr; height: auto; }
+      .wall { grid-template-columns: 1fr; grid-template-rows: none; }
+      .card { min-height: 420px; }
+      .side { min-height: 420px; border-left: 0; border-top: 1px solid #2c2c2c; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="wall" id="wall"></section>
+    <aside class="side">
+      <div class="brand">
+        <img src="logo.svg" width="28" height="28" alt="">
+        <span>Deskpilot</span>
+        <a class="x-link" href="https://x.com/" target="_blank" rel="noopener noreferrer" title="Deskpilot on X">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X
+        </a>
+      </div>
+      <button class="ca" type="button" id="ca" title="Copy contract address">
+        <span class="ca-label">ca:</span>
+        <span class="ca-value" id="ca-value">YOUR_TOKEN_CA_HERE</span>
+      </button>
+      <div class="side-head">
+        <h1>Live learning</h1>
+        <button class="phantom" type="button" id="phantom">Connect Phantom</button>
+      </div>
+      <div class="screen" id="screen">
+        <p class="who">Deskpilot</p>
+        <p class="status">Waiting for the next page.</p>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="section-h"><span>feed</span><span class="dim">pages entering each brain, live</span></div>
+      <div class="log" id="log"></div>
+      <p class="note" id="note">Cyan links are on the page that agent is reading. Pink is the link it opens next.</p>
+    </aside>
+  </div>
+  <script>
+    const cards = [
+      { id: "gennifer", name: "Gennifer", role: "The Analyst", video: "media/gennifer.mp4" },
+      { id: "twain", name: "Twain", role: "The Narrator", video: "media/twain.mp4" },
+      { id: "cody", name: "Cody", role: "The Dev", video: "media/cody.mp4" },
+      { id: "art", name: "Art", role: "The Creative", video: "media/art.mp4" }
+    ];
+    const CA = "YOUR_TOKEN_CA_HERE";
+    const API = "/api/agents";
+    const wall = document.getElementById("wall");
+    const log = document.getElementById("log");
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+      }[ch]));
+    }
+
+    cards.forEach((agent) => {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="stage">
+          <video src="${agent.video}" autoplay muted loop playsinline></video>
+          <div class="activity" id="act-${agent.id}"><b>Searching</b>Opening the web</div>
+        </div>
+        <div class="bar">
+          <div>
+            <h2>${agent.name}</h2>
+            <p id="meta-${agent.id}">${agent.role}</p>
+          </div>
+          <div class="bar-btns">
+          <button class="dp-card-chat" type="button" data-chat="${agent.id}" hidden>Chat</button>
+          <button class="open" type="button" aria-label="Open ${agent.name}">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M4 2H2v8h8V8" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M6 6l4-4M7 2h3v3" stroke="currentColor" stroke-width="1.4"/>
+            </svg>
+          </button>
+          </div>
+        </div>`;
+      wall.appendChild(card);
+      card.querySelector(".open").addEventListener("click", () => {
+        const video = card.querySelector("video");
+        if (video.requestFullscreen) video.requestFullscreen();
+      });
+    });
+
+    function compact(value) {
+      const n = Number(value) || 0;
+      if (n >= 1000000) return (n / 1000000).toFixed(2) + "M";
+      if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+      return String(n);
+    }
+
+    function clock(ts) {
+      const date = new Date(ts || Date.now());
+      return [date.getHours(), date.getMinutes(), date.getSeconds()].map((part) => String(part).padStart(2, "0")).join(":");
+    }
+
+    function paint(data) {
+      const agents = data.agents || [];
+      const stats = data.stats || {};
+      const statsEl = document.getElementById("stats");
+      statsEl.innerHTML = [
+        ["pages", stats.pages || 0],
+        ["tokens", stats.tokens || 0],
+        ["domains", stats.domains || 0],
+        ["awake", stats.awake || 0]
+      ].map(([label, value]) => `<div><b>${escapeHtml(compact(value))}</b><span>${label}</span></div>`).join("");
+
+      const active = agents.slice().sort((a, b) => (b.at || 0) - (a.at || 0))[0];
+      const screen = document.getElementById("screen");
+      if (active) {
+        const links = (active.links || []).slice(0, 5).map((link) => {
+          const pink = link.url === active.nextUrl;
+          return `<a class="${pink ? "pink" : "cyan"}" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${pink ? "next · " : ""}${escapeHtml(link.text || link.url)}</a>`;
+        }).join("");
+        const nextOnly = !links && active.nextUrl
+          ? `<a class="pink" href="${escapeHtml(active.nextUrl)}" target="_blank" rel="noopener noreferrer">next · ${escapeHtml(active.nextUrl)}</a>`
+          : "";
+        screen.innerHTML = `<p class="who">${escapeHtml(active.name)} · ${escapeHtml(active.host || "web")} · ${escapeHtml(String(active.pages || 0))} pg</p>`
+          + `<p class="status">${escapeHtml(active.name)} › ${escapeHtml(active.statusLine || "resting, waiting for its next turn")}</p>`
+          + (links || nextOnly || `<p class="status">${escapeHtml(active.learning || "")}</p>`);
+      }
+
+      agents.forEach((agent) => {
+        const act = document.getElementById("act-" + agent.id);
+        if (act) {
+          act.innerHTML = `<b>${escapeHtml(agent.host || "Searching")}</b>${escapeHtml(agent.name)} › ${escapeHtml(agent.statusLine || "")}`
+            + `<span class="learn">${escapeHtml(agent.learning || "")}</span>`
+            + (agent.url ? ` <a href="${escapeHtml(agent.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(agent.host || agent.url)}</a>` : "");
+        }
+        const meta = document.getElementById("meta-" + agent.id);
+        if (meta) meta.textContent = agent.role + " · " + (agent.pages || 0) + " pg";
+      });
+
+      log.replaceChildren();
+      const feed = data.feed || [];
+      if (!feed.length) {
+        const empty = document.createElement("div");
+        empty.className = "dim";
+        empty.textContent = "streaming live crawler feed.";
+        log.appendChild(empty);
+      }
+      feed.slice(0, 28).forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "line";
+        row.innerHTML = `<span class="t">${escapeHtml(clock(item.ts))}</span>`
+          + `<span class="who">${escapeHtml(item.name)}</span>`
+          + `<span class="ok">READ</span>`
+          + `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title || item.url)}</a>`
+          + `<span class="n">+${escapeHtml(compact(item.tokens || 0))} tok</span>`;
+        log.appendChild(row);
+      });
+
+      const note = document.getElementById("note");
+      if (note) {
+        note.textContent = data.ai
+          ? "Each agent is reading with its own memory and its own model key. Cyan is a link on the page. Pink is the one it opens next."
+          : "Each agent keeps its own memory. Cyan is a link on the page. Pink is the one it opens next. Add an AI key when you want each brain to write the line itself.";
+      }
+    }
+
+    async function refresh() {
+      try {
+        const response = await fetch(API);
+        if (!response.ok) throw new Error("status " + response.status);
+        paint(await response.json());
+      } catch (error) {
+        const note = document.getElementById("note");
+        if (note) note.textContent = "The live crawl did not answer. The videos are still playing.";
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 4000);
+
+    document.getElementById("ca").addEventListener("click", async () => {
+      const button = document.getElementById("ca");
+      const value = document.getElementById("ca-value");
+      try {
+        await navigator.clipboard.writeText(CA);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = CA;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.left = "-9999px";
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+      button.classList.add("copied");
+      value.textContent = "copied";
+      setTimeout(() => {
+        value.textContent = CA;
+        button.classList.remove("copied");
+      }, 1200);
+    });
+
+    document.getElementById("phantom").addEventListener("click", () => {
+      const note = document.getElementById("note");
+      if (note) note.textContent = "Connect Phantom is not available on this page.";
+    });
+
+    // Agent chat (feature-flagged). Renders nothing unless /api/chat-config says enabled.
+    (function initChat() {
+      let widgetLoading = null;
+      function ensureWidget(config) {
+        if (window.DeskpilotChat) return Promise.resolve();
+        if (!widgetLoading) {
+          widgetLoading = new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = "chat/widget.js";
+            s.onload = () => {
+              try {
+                window.DeskpilotChat.init(config);
+                resolve();
+              } catch (e) {
+                reject(e);
+              }
+            };
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+        }
+        return widgetLoading;
+      }
+      fetch("api/chat-config").then((r) => (r.ok ? r.json() : { enabled: false })).then((config) => {
+        if (!config || !config.enabled) return;
+        const accents = {};
+        (config.agents || []).forEach((a) => {
+          accents[a.id] = a.accent;
+        });
+        document.querySelectorAll("[data-chat]").forEach((btn) => {
+          const id = btn.getAttribute("data-chat");
+          btn.hidden = false;
+          if (accents[id]) btn.style.setProperty("--card-accent", accents[id]);
+          btn.addEventListener("click", () => {
+            const card = btn.closest(".card");
+            const video = card ? card.querySelector("video") : null;
+            ensureWidget(config).then(() => {
+              window.DeskpilotChat.open(id, video ? video.currentSrc || video.src : "");
+            }).catch(() => { /* widget failed to load; stay silent */ });
+          });
+        });
+      }).catch(() => { /* chat stays off */ });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "deskpilot-site",
+  "private": true,
+  "dependencies": {
+    "@azure/identity": "4.8.0",
+    "@azure/storage-blob": "12.28.0"
+  }
+}

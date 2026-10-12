@@ -1,0 +1,65 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual env
+venv/
+node_modules/
+.env
+*.env
+
+# macOS
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+*.manifest
+
+# PyInstaller
+*.spec
+dist/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Test coverage
+.coverage
+.tox/
+
+# Others
+.idea/
+.vscode/
+*.swp
+*.bak
+
+# Hosting CLI metadata
+.vercel/
+
+# Secrets and key material (never commit; chat SAS tokens and API keys stay in host env only)
+*.pem
+*.key
+*.pfx
+*.p12
+*credentials*.json
+*sas*.txt
+.azure/
+
+# Local backups and snapshots (live in Temp\opencode, never in the repo)
+*backup*/
+*-backup-*/
+*.bak.json
+deskpilot-invariant-*.json
+
+# Large binaries (deployed from disk via CLI; excluded from code history)
+videos/
+site/media/*.mp4
+# Local ops / deployment scripts (may contain account names, URLs, infra details)
+site/ops/
